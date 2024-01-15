@@ -1,4 +1,4 @@
-0x00. AirBnB clone - The console
+AirBnB_clone_v2 - handeling the database side
 
 
 
