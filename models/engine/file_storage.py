@@ -9,6 +9,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+import shlex
 
 
 class FileStorage:
@@ -22,21 +23,30 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def all(self):
+    def all(self, cls =None):
         """Returns the dictionary of __objects."""
-        return FileStorage.__objects
+        dic = {}
+        if cls:
+            dictionary = self.__objects
+            for key in dictionary:
+                part = key.replace('.', ' ')
+                part = shlex.split(part)
+                if (part[0] == cls.__name__):
+                    dic[key] = self.__objects[key]
+                return (dic)
+        else:
+            return self.__objects
 
     def new(self, obj):
-        """sets a unique identifier "id" """
-        key = "{}.{}".format(obj.__class__.__name__, obj.id)
-        FileStorage.__objects[key] = obj
+        """Sets a unique identifier "id" """
+        key = f"{obj.__class__.__name__}.{obj.id}"
+        self.__objects[key] = obj
 
     def save(self):
-        """serialize the __object to json file. """
-        ob_dict = FileStorage.__objects
-        new_dict = {j: ob_dict[j].to_dict() for j in ob_dict.keys()}
+        """Serialize the __objects to a JSON file."""
         with open(FileStorage.__file_path, "w") as file:
-            json.dump(new_dict, file)
+            json.dump({k: v.to_dict() for k, v in self.__objects.items()}, file)
+
 
     def reload(self):
         """Deserialize the json file """
@@ -54,4 +64,4 @@ class FileStorage:
         """ deleting existing element"""
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
-            del self.__object[key]
+            del self.__objects[key]
