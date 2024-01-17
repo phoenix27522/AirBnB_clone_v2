@@ -15,16 +15,16 @@ from models.review import Review
 
 
 def parse(args):
-    """Parses the provided string argument into a list
-       based on enclosed curly braces or square brackets.
+    """Parses the provided string argument into a list based on enclosed
+    curly braces or square brackets.
 
     Args:
-    - args (str): A string containing arguments possibly
-                  enclosed in curly braces '{}' or square brackets '[]'.
+        args (str): A string containing arguments possibly enclosed in curly
+                    braces '{}' or square brackets '[]'.
 
     Returns:
-    - list: A list of parsed arguments stripped
-            of commas and enclosing brackets.
+        list: A list of parsed arguments stripped of commas and enclosing
+              brackets.
     """
     curley_brace = re.search(r"\{(.*?)\}", args)
     bracket = re.search(r"\[(.*?)\]", args)
@@ -56,7 +56,7 @@ class HBNBCommand(cmd.Cmd):
         "Amenity": Amenity,
         "Place": Place,
         "Review": Review
-        }
+    }
 
     def emptyline(self):
         """Do nothing in this condition"""
@@ -140,7 +140,7 @@ class HBNBCommand(cmd.Cmd):
                 str(val)
                 for key, val in sto_file.items()
                 if key.startswith(arg[0])
-                ])
+            ])
 
     def do_update(self, args):
         """Updates an instance based on the class name and id"""
@@ -187,16 +187,14 @@ class HBNBCommand(cmd.Cmd):
             "count": self.do_count,
             "update": self.do_update
         }
-        match_dot = re.search(r"\.", arg)
-        if match_dot:
-            command, args = arg.split(".", 1)
-            match_bracket = re.search(r"\((.*?)\)", args)
-            if match_bracket:
-                command_name = args[:match_bracket.start()].strip()
-                command_args = args[
-                    match_bracket.start() + 1:match_bracket.end() - 1]
-                if command_name in replace:
-                    return replace[command_name](f"{command} {command_args}")
+        command, args = arg.split(".", 1)
+        match_bracket = re.search(r"\((.*?)\)", args)
+        if match_bracket:
+            command_name = args[:match_bracket.start()].strip()
+            command_args = args[
+                match_bracket.start() + 1:match_bracket.end() - 1]
+            if command_name in replace:
+                return replace[command_name](f"{command} {command_args}")
         print("*** Unknown syntax: {}".format(arg))
         return False
 
