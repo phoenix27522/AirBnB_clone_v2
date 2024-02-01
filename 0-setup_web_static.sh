@@ -1,63 +1,27 @@
 #!/usr/bin/env bash
-# Sets up a web server for deployment of web_static.
+# Bash script that sets up web servers for the deployment of web_static
+sudo apt-get update
+sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
 
-# Check for root privileges
-if [[ $EUID -ne 0 ]]; then
-    echo "This script must be run as root. Exiting..."
-    exit 1
-fi
+sudo mkdir -p /data/
+sudo mkdir -p /data/web_static/
+sudo mkdir -p /data/web_static/releases/
+sudo mkdir -p /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
+sudo touch /data/web_static/releases/test/index.html
+sudo echo "<html>
+  <head>
+  </head>
+  <body>
+    Holberton School
+  </body>
+</html>" | sudo tee /data/web_static/releases/test/index.html
 
-# Update package information
-apt-get update
+sudo ln -s -f /data/web_static/releases/test/ /data/web_static/current
 
-# Install Nginx if not already installed
-apt-get install -y nginx
+sudo chown -R ubuntu:ubuntu /data/
 
-# Create necessary directories
-mkdir -p /data/web_static/releases/test/
-mkdir -p /data/web_static/shared/
+sudo sed -i '/listen 80 default_server/a location /hbnb_static { alias /data/web_static/current/;}' /etc/nginx/sites-enabled/default
 
-# Create a simple HTML file for testing
-echo "Holberton School" > /data/web_static/releases/test/index.html
-
-# Create symbolic link
-ln -sf /data/web_static/releases/test/ /data/web_static/current
-
-# Set ownership
-chown -R ubuntu /data/
-chgrp -R ubuntu /data/
-
-# Create a separate Nginx configuration file
-nginx_config="/etc/nginx/sites-available/web_static"
-
-printf %s "server {
-    listen 80;
-    server_name _;
-    add_header X-Served-By $HOSTNAME;
-    root   /var/www/html;
-    index  index.html index.htm;
-
-    location /hbnb_static {
-        alias /data/web_static/current;
-        index index.html index.htm;
-    }
-
-    location /redirect_me {
-        return 301 http://cuberule.com/;
-    }
-
-    error_page 404 /404.html;
-    location /404 {
-      root /var/www/html;
-      internal;
-    }
-}" > "$nginx_config"
-
-# Create a symbolic link to the sites-enabled directory
-ln -sf "$nginx_config" /etc/nginx/sites-enabled/
-
-# Restart Nginx
-service nginx restart
-
-# Exit successfully
-exit 0
+sudo service nginx restart
