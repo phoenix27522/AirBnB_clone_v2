@@ -4,11 +4,11 @@ Fabric script based on the file 1-pack_web_static.py that distributes an
 archive to the web servers
 """
 
-from invok import put, run, env, task
+from fabric.api import put, run, env
 from os.path import exists
-env.hosts = ["3.80.18.6", "3.84.238.206"]
+env.hosts = ['54.167.183.175', '100.26.169.40']
 
-@task
+
 def do_deploy(archive_path):
     """distributes an archive to the web servers"""
     if exists(archive_path) is False:
