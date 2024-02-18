@@ -65,10 +65,10 @@ class DBStorage:
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Delete an element in the table"""
+        """delete an element in the table
+        """
         if obj:
-            self.__session.delete(obj)
-            self.save()
+            self.session.delete(obj)
 
     def reload(self):
         """configuration
